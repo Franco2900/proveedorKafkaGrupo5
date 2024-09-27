@@ -1,0 +1,5 @@
+Si el server de kafka o el zookeeper no inician (o inician y se cierran) puede ser por corrupción de datos.
+Se solucioná con borrar todo el contenido de C:\kafka\data\kafka y C:\kafka\data\zookeeper\version-2
+
+También puede ser por un problema del antivirus.
+

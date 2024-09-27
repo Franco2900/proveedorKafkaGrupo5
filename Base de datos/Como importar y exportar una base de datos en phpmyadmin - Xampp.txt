@@ -1,0 +1,2 @@
+Como importar y exportar una base de datos en phpmyadmin - Xampp
+https://www.youtube.com/watch?v=J_ow7VIQhxw

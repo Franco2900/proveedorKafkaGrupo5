@@ -1,0 +1,68 @@
+PASOS
+
+1) Instalar el JDK 8 (Java Development Kit) o una versión más nueva
+
+Link de descarga: https://www.oracle.com/java/technologies/downloads/?er=221886#java8-windows
+Dejo el instalador de JDK 8 en esta carpeta, junto al último JDK disponible
+
+Para comprobar si se tiene instalado el JDK se usa el siguiente comando: java -version
+
+----------------------------------------------------------------------------------------------------------
+
+2) Descargar Apache Kafka seleccionando cualquier opción de Binary Downloads
+
+Link de descarga: https://kafka.apache.org/downloads
+Dejo el zip de Apache Kafka en esta carpeta
+
+Sugiero cambiar el nombre de la carpeta descomprimida de kafka_2.12-3.7.0 a simplemente kafka
+
+----------------------------------------------------------------------------------------------------------
+
+3) Llevar la carpeta descomprimida a la ruta C:\
+   De este modo Apache Kafka se encontraría en "C:\kafka"
+
+Luego añadimos la carpeta (carpeta, NO un .exe) "C:\kafka\bin\windows" a la variable PATH del sistema operativo
+
+Link sobre como cambiar la variable PATH: https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53
+
+Probar el siguiente comando desde cualquier ubicación para comprobar que se hizo todo bien: kafka-topics.bat
+
+----------------------------------------------------------------------------------------------------------
+
+4) Ahora hay que instalar zookeeper. En la ruta "C:\kafka" creamos una carpeta llamada data, C:\kafka\data
+   Dentro de la carpeta creada, creamos otras dos carpetas llamadas kafka y zookeeper, C:\kafka\data\kafka y C:\kafka\data\zookeeper
+
+----------------------------------------------------------------------------------------------------------
+
+5) En la ruta "C:\kafka\config" abrimos el archivo zookeeper.properties
+   Hay que cambiar "dataDir=/tmp/zookeeper" por "dataDir=C:/kafka/data/zookeeper"
+
+También abrimos el archivo server.properties
+Hay que cambiar "log.dirs=/tmp/kafka-logs" por "log.dirs=C:/kafka/data/kafka"
+
+----------------------------------------------------------------------------------------------------------
+
+6) Desde la ruta "C:\kafka" ejecutamos el siguiente comando: zookeeper-server-start.bat config\zookeeper.properties
+   Esto ejecutará el zookeeper
+
+Si uno de los últimos mensajes que aparece en la consola es "INFO binding to port 0.0.0.0/0.0.0.0:2181" entonces la conexión fue exitosa
+
+Se debió haber creado en "C:\kafka\data\zookeeper" una nueva carpeta llamada version-2
+
+----------------------------------------------------------------------------------------------------------
+
+7) Desde la ruta "C:\kafka" ejecutamos el siguiente comando: kafka-server-start.bat config\server.properties
+   Esto ejecutara el server. El zookeeper debe estar activo antes de ejecutar el server.
+
+Se debió haber creado unos archivos en "C:\kafka\data\kafka"
+
+----------------------------------------------------------------------------------------------------------
+
+NOTAS
+
+El zookeeper tiene la dirección y puerto 0.0.0.0:2181
+El server    tiene la dirección y puerto localhost:9092 (que se puede traducir a 127.0.0.1:9092)
+
+Fuente: 
+https://www.javatpoint.com/installation-of-apache-kafka
+https://www.youtube.com/watch?v=BwYFuhVhshI

@@ -1,0 +1,92 @@
+NOTA: Un doble /*************/ significa una zona distinta
+
+----------------------------------------------------------------------------
+
+Clonar repositorio remoto en nuestra computadora
+
+git clone RepositorioRemoto
+
+EJ: git clone https://github.com/usuario/repositorio.git
+
+/**************************************************************************/
+/**************************************************************************/
+
+Agregar cambios locales a la zona de preparación (staging area)
+
+Agregar un archivo:          git add NombreDelArchivo
+Agregar múltiples archivos:  git add NombreDelArchivo1 NombreDelArchivo2
+Agregar todos los archivos:  git add .
+
+/**************************************************************************/
+
+Ver el estado de los archivos locales
+
+git status
+
+/**************************************************************************/
+
+Deshacer un git add
+
+Deshacer git add de un solo archivo:    git reset NombreDelArchivo
+Deshacer git add de múltiples archivos: git reset NombreDelArchivo NombreDelArchivo
+Deshacer git add de todos los archivos: git reset
+
+/**************************************************************************/
+
+Deshacer cambios locales a un archivo
+
+Quitar un archivo:          git restore NombreDelArchivo
+Quitar múltiples archivos:  git restore NombreDelArchivo1 NombreDelArchivo2
+Quitar todos los archivos:  git restore .
+
+/**************************************************************************/
+/**************************************************************************/
+
+Guardar todos los cambios de la zona de preparación como una versión del proyecto
+Cada commit crea un punto en el historial del proyecto al que puedes volver más tarde si es necesario. Esto es útil para rastrear y revertir cambios si algo sale mal.
+
+git commit -m "Descripción de los cambios"
+
+/**************************************************************************/
+
+Ver todos los commits
+
+git log --oneline
+
+/**************************************************************************/
+
+Deshacer el último commit pero mantener los cambios en la zona de preparación
+
+git reset --soft nombreCommit
+
+EJ: git reset --soft e56ba1f
+
+Deshacer el último commit y eliminar los cambios en la zona de preparación
+
+git reset --hard nombreCommit
+
+/**************************************************************************/
+/**************************************************************************/
+
+Subir la nueva versión del proyecto (o dicho de otro modo, todos los cambios locales) al repositorio remoto
+
+git push origin main
+
+git push: Es el comando para enviar los cambios desde el repositorio local al repositorio remoto
+origin:   Es el nombre del repositorio remoto al que se esta enviando los cambios. Por defecto, origin es el nombre que Git asigna al repositorio remoto cuando se lo clona
+main:     Es es la rama específica del repositorio remoto al que se envían los datos. En este caso como se envía a la rama principal, el nombre de la rama es main (antes de 2020, la rama principal se llamaba master) 
+
+/**************************************************************************/
+
+Actualizar el repositorio local con los nuevos cambios en el repositorio remoto
+
+git pull origin main
+
+git pull: Es el comando para actualizar el repositorio local con los cambios del repositorio remoto
+origin:   Es el nombre del repositorio remoto desde el que se reciben los cambios. Por defecto, origin es el nombre que Git asigna al repositorio remoto cuando se lo clona
+main:     Es es la rama específica del repositorio remoto de la cual es reciben los datos. En este caso como se reciben de la rama principal, el nombre de la rama es main (antes de 2020, la rama principal se llamaba master) 
+
+git pull es la combinació de git fetch y git merge
+
+git fetch: Descarga los cambios desde el repositorio remoto.
+git merge: Fusiona esos cambios en tu rama local.

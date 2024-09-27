@@ -1,0 +1,36 @@
+Los archivos .jar ejecutables se pueden iniciar con el comando:
+	java -jar NOMBREARCHIVO.jar
+    EJ: java -jar kafdrop-4.0.1.jar
+
+Para ver Kafdrop hay que poner en el navegador localhost:9000
+
+Las propiedades de este comando son:
+
+--kafka.brokerConnect=<host:port,host:port> 	A que red broker debe conectarse. Por defecto es localhost:9092
+--server.port=<port>				En que puerto va a funcionar Kafdrop. Por defecto es el 9000
+--management.server.port=<port>			Lo mismo que el anterior
+--schemaregistry.connect=http://localhost:8081  Lo mismo que el anterior, pero especificando toda la dirección URL
+
+----------------------------------------------------------------------------------------------------------------
+
+Si donde esta el jar de Kafdrop creamos un archivo application.properties, cuando iniciemos Kafdrop este tomará 
+automaticamente la configuración que haya allí
+
+En el archivo application.properties que cree le indico a Kafdrop que funcione en el puerto 8888, en vez del 9000
+
+----------------------------------------------------------------------------------------------------------------
+
+El topic __consumer_offsets es creado automáticamente. 
+
+Los grupos de consumidores también tienen su valor offset para saber a que particiones están leyendo. 
+Tan pronto como un consumidor empieza a leer una partición, se actualizan los valores offset.
+Esta característica se implementó en el caso de que un consumidor no pueda leer los datos. 
+Por lo tanto, el consumidor podrá seguir leyendo desde donde lo dejó debido al compromiso del offset
+
+Explicado en la parte 2 de "Teoría de Apache Kafka"
+
+----------------------------------------------------------------------------------------------------------------
+
+Fuentes:
+https://github.com/obsidiandynamics/kafdrop
+https://www.youtube.com/watch?v=bedkXpJigAY
