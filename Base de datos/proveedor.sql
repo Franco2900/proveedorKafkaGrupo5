@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-09-2024 a las 20:06:34
+-- Tiempo de generación: 28-09-2024 a las 01:23:27
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -36,6 +36,16 @@ CREATE TABLE `item` (
   `id_orden_de_compra` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `item`
+--
+
+INSERT INTO `item` (`id`, `producto_codigo`, `color`, `talle`, `cantidad_solicitada`, `id_orden_de_compra`) VALUES
+(11, 'producto_codigo_1', 'Verde', 'L', 5, 19),
+(12, 'producto_codigo_2', 'Azul', 'M', 3, 19),
+(13, 'producto_codigo_1', 'Verde', 'L', 5, 20),
+(14, 'producto_codigo_2', 'Azul', 'M', 3, 20);
+
 -- --------------------------------------------------------
 
 --
@@ -52,6 +62,14 @@ CREATE TABLE `orden_de_compra` (
   `tienda_codigo` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `orden_de_compra`
+--
+
+INSERT INTO `orden_de_compra` (`id`, `estado`, `observaciones`, `orden_de_despacho`, `fecha_de_solicitud`, `fecha_de_recepcion`, `tienda_codigo`) VALUES
+(19, 'SOLICITADA', 'Sin observaciones', NULL, '2024-09-27', NULL, 'ASDF'),
+(20, 'SOLICITADA', 'Sin observaciones', NULL, '2024-09-27', NULL, 'ASDF');
+
 -- --------------------------------------------------------
 
 --
@@ -62,7 +80,7 @@ CREATE TABLE `producto` (
   `codigo` varchar(50) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `talle` varchar(50) NOT NULL,
-  `foto` longblob NOT NULL,
+  `foto` varchar(50) NOT NULL,
   `color` varchar(50) NOT NULL,
   `stock` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -92,13 +110,13 @@ ALTER TABLE `orden_de_compra`
 -- AUTO_INCREMENT de la tabla `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `orden_de_compra`
 --
 ALTER TABLE `orden_de_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Restricciones para tablas volcadas

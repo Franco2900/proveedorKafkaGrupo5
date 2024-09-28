@@ -1,17 +1,18 @@
 const express = require('express') 
-const { Kafka } = require('kafkajs')
+const { Kafka } = require('kafkajs');
 const conexionDataBase = require('./conexionDataBase.js');
 
-const app = express()          
-
-app.use(express.json()); // Middleware para parsear los datos que me llegan de las solicitudes a JSON
+const app = express()    
 
 const kafka = new Kafka({ // Conexión con kafka
     clientId: 'my-app',
     brokers: ['localhost:9092']
 })
 
-const producer = kafka.producer(); // Creo un productor
+/**************************** MIDDLEWARE *********************************/
+app.use(express.json()); // Middleware para parsear los datos que me llegan de las solicitudes a JSON
+
+app.use('/ordenesDeCompra', require('./Rutas/ordenesDeCompra') );
 
 /**************************** RUTAS *****************************/
 
@@ -23,81 +24,62 @@ app.get('/', function(req, res) {  // La ruta '/' ejecutara la función que le p
 })
 
 
-app.post('/altaOrdenDeCompra', async (req, res) => { 
 
-    // Los datos que me llegan de la solicitud/request
-    var observaciones = req.body.observaciones ? req.body.observaciones : 'Sin observaciones';
-    var tienda_codigo = req.body.tienda_codigo;
-    var items         = req.body.items.slice();
+const consumidorOrdenesDeCompra = kafka.consumer({ groupId: 'consumidorOrdenesDeCompra' }); // Creo un consumidor. Le indico a que grupo de consumidores pertenece.
 
-
-    // Obtener la fecha actual
-    var fechaActual = new Date();
+(async function() {
     
-    var anio = fechaActual.getFullYear();
-    var mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Los meses empiezan en 0
-    var dia = String(fechaActual.getDate() ).padStart(2, '0');     // padStart() rellena un string con otro hasta que alcance cierta longitud (sirve para cuando el dia o el mes es de un solo digito)
-    
-    var fechaFormateada = `${anio}-${mes}-${dia}`;
+    await consumidorOrdenesDeCompra.connect();  // El consumidor se conecta
+    await consumidorOrdenesDeCompra.subscribe({ topic: 'orden-de-compra', fromBeginning: false }); // El consumidor se suscribe al topic y se queda esperando por mensajes nuevos. Si no existe el topic, lo crea.
 
+    await consumidorOrdenesDeCompra.run({
+        eachMessage: async ({ topic, partition, message }) => { // Indica que acción debe hacer el consumidor para cada mensaje que le llegue
+           
+            var mensajeParseado = JSON.parse(message.value.toString() ); // Parseo el string JSON que viene del topic
+            
+            var idOrdenDeCompra = mensajeParseado.idOrdenDeCompra;
+            console.log("Leyendo orden de compra: " + idOrdenDeCompra);
+           
+            // VERIFICACIÓN PARA SABER SI producto_codigo EXISTE EN LA TABLA producto
+            var itemsSolicitados = mensajeParseado.itemsSolicitados.slice();  // slice() copia un arreglo
+            console.log(itemsSolicitados);
 
-    // Carga a la base de datos
-    await conexionDataBase.query(`INSERT INTO orden_de_compra 
-        SET estado = 'SOLICITADA', 
-        observaciones = '${observaciones}', 
-        fecha_de_solicitud = '${fechaFormateada}',
-        tienda_codigo = '${tienda_codigo}' `, {});
+            for(var i = 0; i < itemsSolicitados.length; i++) // Reviso el codigo de cada uno de los productos del arreglo de items
+            {
+                var resultadosConsulta = await conexionDataBase.query(`SELECT EXISTS (SELECT codigo FROM producto WHERE codigo = '${itemsSolicitados[i].producto_codigo}') AS existe `, {})
+                var existeProducto = resultadosConsulta[0].existe;
 
-    
-    var resultadosConsulta = await conexionDataBase.query(`SELECT MAX(id) AS id FROM orden_de_compra `, {}); 
-    // Otra forma de obtener el último id: SELECT LAST_INSERT_ID()
-    var IdUltimaOrdenDeCompra = resultadosConsulta[0].id;
+                if(!existeProducto)
+                {
+                    console.log(`No existe el producto ${itemsSolicitados[i].producto_codigo}`);
+                }
 
-    for (let item of items) 
-    {
-        await conexionDataBase.query(`INSERT INTO item 
-            SET producto_codigo = '${item.producto_codigo}', 
-            color = '${item.color}', 
-            talle = '${item.talle}', 
-            cantidad_solicitada = ${item.cantidad_solicitada}, 
-            id_orden_de_compra = ${IdUltimaOrdenDeCompra} `, {});
-    }
+                // VERIFICACIÓN PARA SABER SI cantidad_solicitada ES MENOR A 1
+                var cantidad_solicitada = itemsSolicitados[i].cantidad_solicitada;
+                if(cantidad_solicitada < 1)
+                {
+                    console.log(`La cantidad solicitada para el producto ${itemsSolicitados[i].producto_codigo} es menor a 1`);
+                }
 
-    console.log("Se hizo el alta de la orden de compra con los siguientes datos: ");
-    console.log(req.body);
+                /*
+                // EN CASO DE ERROR, SE ENVIA UN MENSAJE AL TOPIC {codigo de tienda}/solicitudes con el estado RECHAZADA y en observaciones con el error/es encontrado
+                if(!existeProducto || cantidad_solicitada < 1)
+                {
 
-       
-    // Carga al topic
-    await producer.connect(); // El productor se conecta
+                }
+                */
+            }
+            
+            
+            
 
-    await producer.send({  // El productor envia uno o varios mensajes al topic indicado. Si no existe el topic, lo crea.
-        topic: 'orden-de-compra',
-        messages: [
-          { value: JSON.stringify({ tienda_codigo: `${tienda_codigo}`, idOrdenDeCompra: IdUltimaOrdenDeCompra, itemsSolicitados: items, fechaSolicitud: fechaFormateada}) }, // Envio el mensaje en json
-        ],
-    });
+            
 
-    await producer.disconnect() // El productor se desconecta
-    
+            
+        },
+    })
 
-    res.sendStatus(200);
-})
-
-
-const consumer = kafka.consumer({ groupId: 'grupoConsumidor-1' }); // Creo un consumidor. Le indico a que grupo de consumidores pertenece.
-
-await consumer.connect();  // El consumidor se conecta
-await consumer.subscribe({ topic: 'topic-1', fromBeginning: true }); // El consumidor se suscribe al topic y se queda esperando por mensajes nuevos. Si no existe el topic, lo crea.
-
-await consumer.run({
-    eachMessage: async ({ topic, partition, message }) => { // Indica que acción debe hacer el consumidor para cada mensaje que le llegue
-      console.log({
-        partition,
-        offset: message.offset,
-        value: JSON.parse(message.value.toString() ), // Leo el json
-      })
-    },
-})
+})();
 
 /*************************** ARRANQUE SERVIDOR ********************************/
 
