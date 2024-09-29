@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "start": "nodemon servidor.js"
+    "start": "nodemon --watch views --ext ejs --exec node servidor.js"
   },
   "dependencies": {
+    "ejs": "^3.1.10",
     "express": "^4.21.0",
     "kafkajs": "^2.2.4",
     "mysql": "^2.18.1",

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Formulario</title>
+</head>
+
+<body>
+    <% if (producto) { %>
+    <div class="container mt-4">
+        <div class="card border-secondary">
+            <div class="card-header"> Actualizando Stock</div>
+            <div class="card-body">
+
+                <form action="/producto/update" method="POST">
+                    <input id="codigo" name="codigo" value="<%= producto.codigo %>" hidden>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Stock anterior</label>
+                        <input type="number" class="form-control" id="stock" name="stock" value="<%= producto.stock %>" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Stock nuevo</label>
+                        <input type="number" class="form-control" id="newstock" name="newstock">
+                    </div>
+                
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                    <a href="/producto/lista" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <% } %>
+
+</body>
+
+</html>
