@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-09-2024 a las 01:19:45
+-- Tiempo de generación: 30-09-2024 a las 00:17:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -84,10 +84,10 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`codigo`, `nombre`, `talle`, `foto`, `color`, `stock`) VALUES
-('CB123', 'Camisa Básica', 'M', 'urlFoto', 'Rojo', 10),
-('PJ456', 'Pantalones Jeans', 'L', 'urlFoto', 'Azul', 8),
 ('AAAAA', 'Campera', 'XL', 'urlFoto', 'Gris', 3),
-('BBBBB', 'Gorra', 'S', 'urlFoto', 'Naranja', 0);
+('BBBBB', 'Gorra', 'S', 'urlFoto', 'Naranja', 0),
+('CB123', 'Camisa Básica', 'M', 'urlFoto', 'Rojo', 10),
+('PJ456', 'Pantalones Jeans', 'L', 'urlFoto', 'Azul', 8);
 
 --
 -- Índices para tablas volcadas
@@ -113,6 +113,12 @@ ALTER TABLE `orden_de_compra`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `producto`
+--
+ALTER TABLE `producto`
+  ADD PRIMARY KEY (`codigo`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -126,13 +132,13 @@ ALTER TABLE `despacho`
 -- AUTO_INCREMENT de la tabla `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `orden_de_compra`
 --
 ALTER TABLE `orden_de_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restricciones para tablas volcadas
