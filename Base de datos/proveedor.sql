@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-09-2024 a las 01:23:27
+-- Tiempo de generación: 29-09-2024 a las 01:19:45
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -24,6 +24,18 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `despacho`
+--
+
+CREATE TABLE `despacho` (
+  `id` int(11) NOT NULL,
+  `id_orden_de_compra` int(11) DEFAULT NULL,
+  `fecha_de_envio` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `item`
 --
 
@@ -35,16 +47,6 @@ CREATE TABLE `item` (
   `cantidad_solicitada` int(11) NOT NULL,
   `id_orden_de_compra` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `item`
---
-
-INSERT INTO `item` (`id`, `producto_codigo`, `color`, `talle`, `cantidad_solicitada`, `id_orden_de_compra`) VALUES
-(11, 'producto_codigo_1', 'Verde', 'L', 5, 19),
-(12, 'producto_codigo_2', 'Azul', 'M', 3, 19),
-(13, 'producto_codigo_1', 'Verde', 'L', 5, 20),
-(14, 'producto_codigo_2', 'Azul', 'M', 3, 20);
 
 -- --------------------------------------------------------
 
@@ -62,14 +64,6 @@ CREATE TABLE `orden_de_compra` (
   `tienda_codigo` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `orden_de_compra`
---
-
-INSERT INTO `orden_de_compra` (`id`, `estado`, `observaciones`, `orden_de_despacho`, `fecha_de_solicitud`, `fecha_de_recepcion`, `tienda_codigo`) VALUES
-(19, 'SOLICITADA', 'Sin observaciones', NULL, '2024-09-27', NULL, 'ASDF'),
-(20, 'SOLICITADA', 'Sin observaciones', NULL, '2024-09-27', NULL, 'ASDF');
-
 -- --------------------------------------------------------
 
 --
@@ -86,8 +80,24 @@ CREATE TABLE `producto` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Volcado de datos para la tabla `producto`
+--
+
+INSERT INTO `producto` (`codigo`, `nombre`, `talle`, `foto`, `color`, `stock`) VALUES
+('CB123', 'Camisa Básica', 'M', 'urlFoto', 'Rojo', 10),
+('PJ456', 'Pantalones Jeans', 'L', 'urlFoto', 'Azul', 8),
+('AAAAA', 'Campera', 'XL', 'urlFoto', 'Gris', 3),
+('BBBBB', 'Gorra', 'S', 'urlFoto', 'Naranja', 0);
+
+--
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `despacho`
+--
+ALTER TABLE `despacho`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `item`
@@ -107,16 +117,22 @@ ALTER TABLE `orden_de_compra`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `despacho`
+--
+ALTER TABLE `despacho`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT de la tabla `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT de la tabla `orden_de_compra`
 --
 ALTER TABLE `orden_de_compra`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Restricciones para tablas volcadas

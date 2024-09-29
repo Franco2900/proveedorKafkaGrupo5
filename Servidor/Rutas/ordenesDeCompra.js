@@ -1,3 +1,7 @@
+process.env.KAFKAJS_NO_PARTITIONER_WARNING = '1'; // Para que no muestre el mensaje de advertencia. 
+// Esto se debe a un cambio en la versión 2.0.0 de KafkaJS. En esta versión, el particionador predeterminado ha sido cambiado. 
+// Anteriormente, se utilizaba el LegacyPartitioner, pero ahora se usa el DefaultPartitioner
+
 var express = require('express');
 var router  = express.Router();
 
@@ -9,12 +13,11 @@ const kafka = new Kafka({ // Conexión con kafka
     brokers: ['localhost:9092']
 })
 
-const producer = kafka.producer(); // Creo un productor
+const productor = kafka.producer(); // Creo un productor
 
 router.post('/alta', async (req, res) => { 
 
     // Los datos que me llegan de la solicitud/request
-    var observaciones = req.body.observaciones ? req.body.observaciones : 'Sin observaciones';
     var tienda_codigo = req.body.tienda_codigo;
     var items         = req.body.items.slice(); // slice() copia un arreglo
 
@@ -29,10 +32,10 @@ router.post('/alta', async (req, res) => {
     var fechaFormateada = `${anio}-${mes}-${dia}`;
 
 
-    // Carga a la base de datos
+    // CARGA A LA BASE DE DATOS
     await conexionDataBase.query(`INSERT INTO orden_de_compra 
         SET estado = 'SOLICITADA', 
-        observaciones = '${observaciones}', 
+        observaciones = 'Sin observaciones', 
         fecha_de_solicitud = '${fechaFormateada}',
         tienda_codigo = '${tienda_codigo}' `, {});
 
@@ -51,24 +54,21 @@ router.post('/alta', async (req, res) => {
             id_orden_de_compra = ${IdUltimaOrdenDeCompra} `, {});
     }
 
-    console.log("Se hizo el alta de la orden de compra con los siguientes datos: ");
-    //console.log(req.body);
+ 
+    // CARGA AL TOPIC
+    await productor.connect(); // El productor se conecta
 
-       
-    // Carga al topic
-    
-    await producer.connect(); // El productor se conecta
-
-    await producer.send({  // El productor envia uno o varios mensajes al topic indicado. Si no existe el topic, lo crea.
+    await productor.send({  // El productor envia uno o varios mensajes al topic indicado. Si no existe el topic, lo crea.
         topic: 'orden-de-compra',
         messages: [
-          { value: JSON.stringify({ tienda_codigo: `${tienda_codigo}`, idOrdenDeCompra: IdUltimaOrdenDeCompra, itemsSolicitados: items, fechaSolicitud: fechaFormateada}) }, // Envio el mensaje en json
+          { value: JSON.stringify({ tienda_codigo: `${tienda_codigo}`, idOrdenDeCompra: IdUltimaOrdenDeCompra, itemsSolicitados: items, fechaSolicitud: fechaFormateada, estado: 'SOLICITADA'}) }, // Envio el mensaje en json
         ],
     });
 
-    await producer.disconnect() // El productor se desconecta
+    await productor.disconnect();  // El productor se desconecta
     
-
+    
+    console.log("Se hizo el alta de la orden de compra");
     res.sendStatus(200);
 })
 
