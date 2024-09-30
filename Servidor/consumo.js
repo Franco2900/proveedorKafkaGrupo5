@@ -87,19 +87,18 @@ async function consumirOrdenesDeCompra() {
                 }
 
                 // Si hay alguna observación por la cantidad faltante de stock 
-                if(observaciones.length > 1) generarSolicitudAceptadaSinDespacho(tienda_codigo, idOrdenDeCompra, itemsSolicitados, fechaSolicitud, observaciones) 
-                /*else
+                if(observaciones.length > 1) generarSolicitudAceptadaSinDespacho(tienda_codigo, idOrdenDeCompra, itemsSolicitados, fechaSolicitud, observaciones); 
+                else
                 {
-                    observaciones = observaciones ? observaciones : 'Sin observaciones';
-
-                    
-                }*/
+                    // Si esta todo bien y hay stock suficiente
+                    observaciones = observaciones ? observaciones : 'Sin observaciones'; 
+                    generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompra, itemsSolicitados, fechaSolicitud, observaciones);
+                }
             }
 
         },
     })
 
-    
 };
 
 
@@ -122,6 +121,8 @@ async function generarSolicitudRechazada(tienda_codigo, idOrdenDeCompra, itemsSo
     await conexionDataBase.query(`UPDATE orden_de_compra 
                                   SET estado = 'RECHAZADA', observaciones = '${observaciones}'
                                   WHERE id = ${idOrdenDeCompra} `, {});
+
+    console.log('Generado solicitud RECHAZADA');
 }
 
 
@@ -144,12 +145,14 @@ async function generarSolicitudAceptadaSinDespacho(tienda_codigo, idOrdenDeCompr
     await conexionDataBase.query(`UPDATE orden_de_compra 
                                   SET estado = 'ACEPTADA', observaciones = '${observaciones}'
                                   WHERE id = ${idOrdenDeCompra} `, {});
+
+    console.log('Generado solicitud ACEPTADA');
 }
 
 
 
 // Punto 2.C: GENERAR SOLICITUD ACEPTADA CON LA ORDEN DE DESPACHO
-/*async function generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompra, itemsSolicitados, fechaSolicitud, observaciones) 
+async function generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompra, itemsSolicitados, fechaSolicitud, observaciones) 
 {    
     // Envio un mensaje al topic {codigo de tienda}/despacho y hago un insert en la base de datos
     await productor.connect();
@@ -174,11 +177,11 @@ async function generarSolicitudAceptadaSinDespacho(tienda_codigo, idOrdenDeCompr
     });
 
 
-    // Envio un mensaje al topic {codigo de tienda}/solicitudes con el estado ACEPTADA y en observaciones indico que no hubo problemas
+    // Envio un mensaje al topic {codigo de tienda}/solicitudes con el estado ACEPTADA, el id de la orden de despacho y en observaciones indico que no hubo problemas
     await productor.send({ 
         topic: `${tienda_codigo}-solicitudes`,
         messages: [
-        { value: JSON.stringify({ tienda_codigo: `${tienda_codigo}`, idOrdenDeCompra: idOrdenDeCompra, itemsSolicitados: itemsSolicitados, fechaSolicitud: fechaSolicitud, estado: 'ACEPTADA', observaciones: `${observaciones}`}) }, // Envio el mensaje en json
+        { value: JSON.stringify({ tienda_codigo: tienda_codigo, idOrdenDeCompra: idOrdenDeCompra, idDespacho: IdUltimoDespacho, itemsSolicitados: itemsSolicitados, fechaSolicitud: fechaSolicitud, estado: 'ACEPTADA', observaciones: observaciones}) }, // Envio el mensaje en json
         ],
     });
 
@@ -202,8 +205,10 @@ async function generarSolicitudAceptadaSinDespacho(tienda_codigo, idOrdenDeCompr
         await conexionDataBase.query(`UPDATE producto SET stock = ${auxStock} WHERE codigo = '${itemsSolicitados[i].producto_codigo}' `, {});
     }
     
+
+    console.log('Generado solicitud ACEPTADA y orden de DESPACHO');
 }
-*/
+
 
 
 

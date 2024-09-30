@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "nodemon --watch views --ext ejs --exec node servidor.js"
+    "start": "nodemon --watch . --ext ejs,js,json --exec node servidor.js"
   },
   "dependencies": {
     "ejs": "^3.1.10",
