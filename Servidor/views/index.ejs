@@ -16,27 +16,29 @@
 <body>
 
     <div class="container">
-        <a href="/producto/alta" class="btn btn-outline-primary mt-4">Agregar</i> </a>
+        <a href="/alta" class="btn btn-outline-primary mt-4">Agregar</i> </a>
         <table class="table table-bordered table-striped text-center mt-4">
             <thead>
                 <tr class="bg-primary text-white">
+
+                    <th scope="col">Codigo</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Talle</th>
                     <th scope="col">Color</th>
                     <th scope="col">Stock</th>
-
                 </tr>
 
             </thead>
             <tbody>
                 <% results.forEach((producto)=> { %>
                 <tr>
+                    <td><%= producto.codigo %></td>
                     <td><%= producto.nombre %></td>
                     <td><%= producto.talle %></td>
                     <td><%= producto.color %></td>
                     <td><%= producto.stock %></td>
                     <td>
-                        <a href="/producto/edit/<%= producto.codigo %>" class="btn btn-outline-info">Editar</a>
+                        <a href="/edit/<%= producto.codigo %>" class="btn btn-outline-info">Editar</a>
                     </td>
                 </tr>
                 <% }) %>

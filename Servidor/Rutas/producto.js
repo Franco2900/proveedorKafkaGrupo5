@@ -6,11 +6,12 @@ var express = require('express');
 var router  = express.Router();
 
 const conexionDataBase = require('../conexionDataBase.js');
-const { Kafka } = require('kafkajs');
+const { Kafka, logLevel } = require('kafkajs');
 
 const kafka = new Kafka({ // Conexión con kafka
     clientId: 'my-app',
-    brokers: ['localhost:9092']
+    brokers: ['localhost:9092'],
+    logLevel: logLevel.ERROR // Para que kafka solo tire mensajes de tipo ERROR. Los otros tipos de mensajes como INFO no los muestra
 })
 
 const productor = kafka.producer(); // Creo un producto
@@ -64,8 +65,9 @@ router.post('/alta',async(req,res)=>{
 
     await productor.disconnect();  // El productor se desconecta
 
+    console.log("Se hizo el alta de un nuevo producto: " + codigo);
 
-    res.redirect('/producto/lista');
+    res.redirect('/');
 });
 
 
@@ -92,6 +94,7 @@ router.post('/update',async(req,res)=>{
     
     // ACTUALIZACION A LA BASE DE DATOS
     await conexionDataBase.query(`UPDATE producto SET stock = ${newstock} WHERE codigo = '${codigo}' `, {} )
+    console.log(`Se actualizo el stock del producto ${codigo} a la cantidad ${newstock}`);
 
 
     // Consulto todas las ordenes de compra ACEPTADAS que todavía NO tengan un despacho por la falta de stock y que tengan algun item con el producto_codigo igual al que se acabo de hacer stock
@@ -160,7 +163,7 @@ router.post('/update',async(req,res)=>{
 
     }
 
-    res.redirect('/producto/lista');
+    res.redirect('/');
 })
 
 

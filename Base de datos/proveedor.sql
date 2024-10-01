@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-09-2024 a las 00:17:41
+-- Tiempo de generación: 01-10-2024 a las 20:34:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -80,16 +80,6 @@ CREATE TABLE `producto` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Volcado de datos para la tabla `producto`
---
-
-INSERT INTO `producto` (`codigo`, `nombre`, `talle`, `foto`, `color`, `stock`) VALUES
-('AAAAA', 'Campera', 'XL', 'urlFoto', 'Gris', 3),
-('BBBBB', 'Gorra', 'S', 'urlFoto', 'Naranja', 0),
-('CB123', 'Camisa Básica', 'M', 'urlFoto', 'Rojo', 10),
-('PJ456', 'Pantalones Jeans', 'L', 'urlFoto', 'Azul', 8);
-
---
 -- Índices para tablas volcadas
 --
 
@@ -97,7 +87,8 @@ INSERT INTO `producto` (`codigo`, `nombre`, `talle`, `foto`, `color`, `stock`) V
 -- Indices de la tabla `despacho`
 --
 ALTER TABLE `despacho`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_orden_de_compra` (`id_orden_de_compra`);
 
 --
 -- Indices de la tabla `item`
@@ -143,6 +134,12 @@ ALTER TABLE `orden_de_compra`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `despacho`
+--
+ALTER TABLE `despacho`
+  ADD CONSTRAINT `despacho_ibfk_1` FOREIGN KEY (`id_orden_de_compra`) REFERENCES `orden_de_compra` (`id`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `item`

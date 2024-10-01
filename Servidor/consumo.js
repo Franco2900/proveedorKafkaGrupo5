@@ -3,11 +3,12 @@ process.env.KAFKAJS_NO_PARTITIONER_WARNING = '1'; // Para que no muestre el mens
 // Anteriormente, se utilizaba el LegacyPartitioner, pero ahora se usa el DefaultPartitioner
 
 const conexionDataBase = require('./conexionDataBase.js');
-const { Kafka } = require('kafkajs');
+const { Kafka, logLevel } = require('kafkajs');
 
 const kafka = new Kafka({ // Conexión con kafka
     clientId: 'my-app',
-    brokers: ['localhost:9092']
+    brokers: ['localhost:9092'],
+    logLevel: logLevel.ERROR // Para que kafka solo tire mensajes de tipo ERROR. Los otros tipos de mensajes como INFO no los muestra
 })
 
 const consumidorOrdenesDeCompra = kafka.consumer({ groupId: 'consumidorOrdenesDeCompra' }); // Creo un consumidor. Le indico a que grupo de consumidores pertenece.
