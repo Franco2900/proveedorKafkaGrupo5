@@ -17,8 +17,7 @@ app.get('/', function(req, res) {  // La ruta '/' ejecutara la función que le p
 })
 
 app.use('/ordenesDeCompra', require('./Rutas/ordenesDeCompra') );
-app.use('/novedades', require('./Rutas/novedades') );
-app.use('/producto',require('./Rutas/producto'))
+app.use('/',require('./Rutas/producto'))
 /*************************** ARRANQUE SERVIDOR ********************************/
 
 const server = app.listen(2000, () => { // Creo el servidor y le indico que escuche en el puerto 2000. Ir a localhost:2000 con el navegador para ver los resultados
