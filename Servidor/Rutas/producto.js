@@ -94,6 +94,8 @@ router.post('/update',async(req,res)=>{
     
     // ACTUALIZACION A LA BASE DE DATOS
     await conexionDataBase.query(`UPDATE producto SET stock = ${newstock} WHERE codigo = '${codigo}' `, {} )
+
+    console.log('***********************************************************');
     console.log(`Se actualizo el stock del producto ${codigo} a la cantidad ${newstock}`);
 
 
@@ -197,7 +199,7 @@ async function generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompr
     await productor.send({ 
         topic: `${tienda_codigo}-solicitudes`,
         messages: [
-        { value: JSON.stringify({ tienda_codigo: tienda_codigo, idOrdenDeCompra: idOrdenDeCompra, idDespacho: IdUltimoDespacho, itemsSolicitados: itemsSolicitados, fechaSolicitud: fechaSolicitud, estado: 'ACEPTADA', observaciones: observaciones}) }, // Envio el mensaje en json
+        { value: JSON.stringify({ tienda_codigo: tienda_codigo, idOrdenDeCompra: idOrdenDeCompra, idDespacho: IdUltimoDespacho, itemsSolicitados: itemsSolicitados, fechaSolicitud: fechaSolicitud, fechaDeEnvio: fechaDeEnvio, estado: 'ACEPTADA', observaciones: observaciones}) }, // Envio el mensaje en json
         ],
     });
 

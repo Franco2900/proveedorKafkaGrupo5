@@ -41,6 +41,7 @@ async function consumirOrdenesDeCompra() {
             var itemsSolicitados = mensajeParseado.itemsSolicitados.slice();  // slice() copia un arreglo
             var fechaSolicitud   = mensajeParseado.fechaSolicitud;
 
+            console.log('***********************************************************');
             console.log("Leyendo orden de compra: " + idOrdenDeCompra);
 
             // VERIFICACIÓN
@@ -182,7 +183,7 @@ async function generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompr
     await productor.send({ 
         topic: `${tienda_codigo}-solicitudes`,
         messages: [
-        { value: JSON.stringify({ tienda_codigo: tienda_codigo, idOrdenDeCompra: idOrdenDeCompra, idDespacho: IdUltimoDespacho, itemsSolicitados: itemsSolicitados, fechaSolicitud: fechaSolicitud, estado: 'ACEPTADA', observaciones: observaciones}) }, // Envio el mensaje en json
+        { value: JSON.stringify({ tienda_codigo: tienda_codigo, idOrdenDeCompra: idOrdenDeCompra, idDespacho: IdUltimoDespacho, itemsSolicitados: itemsSolicitados, fechaSolicitud: fechaSolicitud, fechaDeEnvio: fechaDeEnvio, estado: 'ACEPTADA', observaciones: observaciones}) }, // Envio el mensaje en json
         ],
     });
 

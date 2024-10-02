@@ -67,8 +67,8 @@ router.post('/alta', async (req, res) => {
 
     await productor.disconnect();  // El productor se desconecta
     
-    
-    console.log("Se hizo el alta de la orden de compra");
+    console.log('***********************************************************');
+    console.log("Se hizo el alta de la orden de compra " + IdUltimaOrdenDeCompra);
     res.sendStatus(200);
 })
 
