@@ -65,6 +65,7 @@ router.post('/alta',async(req,res)=>{
 
     await productor.disconnect();  // El productor se desconecta
 
+    console.log('***********************************************************');
     console.log("Se hizo el alta de un nuevo producto: " + codigo);
 
     res.redirect('/');

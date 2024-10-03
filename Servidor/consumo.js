@@ -14,17 +14,17 @@ const kafka = new Kafka({ // Conexión con kafka
 const consumidorOrdenesDeCompra = kafka.consumer({ groupId: 'consumidorOrdenesDeCompra' }); // Creo un consumidor. Le indico a que grupo de consumidores pertenece.
 const productor = kafka.producer(); // Creo un productor
 
-let hayUnConsumidorCorriendo = false;
+let hayUnConsumidorOrdenesDeCompraCorriendo = false;
 
 async function consumirOrdenesDeCompra() {
 
     // MEDIDA DE SEGURIDAD PARA ASEGURARME DE QUE SOLO HAYA UN CONSUMIDOR
-    if (hayUnConsumidorCorriendo) {
+    if (hayUnConsumidorOrdenesDeCompraCorriendo) {
         console.log("El consumidor ya está corriendo");
         return;
     }
 
-    hayUnConsumidorCorriendo = true;
+    hayUnConsumidorOrdenesDeCompraCorriendo = true;
 
 
     await consumidorOrdenesDeCompra.connect();  // El consumidor se conecta
@@ -215,27 +215,45 @@ async function generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompr
 
 
 // Punto 7
-/*const consumidorRecepcion = kafka.consumer({ groupId: 'consumidorRecepcion' }); // Creo un consumidor. Le indico a que grupo de consumidores pertenece.
+const consumidorRecepcion = kafka.consumer({ groupId: 'consumidorRecepcion' }); // Creo un consumidor. Le indico a que grupo de consumidores pertenece.
+let hayUnConsumidorRecepcionCorriendo = false;
 
-async function consumirRecepcion() {
+async function consumirRecepcion() 
+{
+    // MEDIDA DE SEGURIDAD PARA ASEGURARME DE QUE SOLO HAYA UN CONSUMIDOR
+    if (hayUnConsumidorRecepcionCorriendo) {
+        console.log("El consumidor ya está corriendo");
+        return;
+    }
 
-    await consumidorOrdenesDeCompra.run({
+    hayUnConsumidorRecepcionCorriendo = true;
+
+
+    await consumidorRecepcion.connect();  // El consumidor se conecta
+    await consumidorRecepcion.subscribe({ topic: 'recepcion', fromBeginning: false }); // El consumidor se suscribe al topic y se queda esperando por mensajes nuevos. Si no existe el topic, lo crea.
+
+    await consumidorRecepcion.run({
         eachMessage: async ({ topic, partition, message }) => {
 
             // OBTENCIÓN DE DATOS
             var mensajeParseado = JSON.parse(message.value.toString() ); // Parseo el string JSON que viene del topic
 
             var idOrdenDeCompra    = mensajeParseado.idOrdenDeCompra;
-            var fecha_de_recepcion = mensajeParseado.fecha_de_recepcion;
+            var idDespacho         = mensajeParseado.idDespacho;
+            var fecha_de_recepcion = mensajeParseado.fechaRecepcion;
 
+            // ACTUALIZO LA BASE DE DATOS
             await conexionDataBase.query(`UPDATE orden_de_compra 
                 SET estado = 'RECIBIDA',
                 fecha_de_recepcion = '${fecha_de_recepcion}'
                 WHERE id = ${idOrdenDeCompra} `, {});
+
+            console.log('***********************************************************');
+            console.log(`La orden de compra ${idOrdenDeCompra} fue RECIBIDA`);
         },
     })
 
-}*/
+}
 
 exports.consumirOrdenesDeCompra = consumirOrdenesDeCompra;
-//exports.consumirRecepcion = consumirRecepcion;
+exports.consumirRecepcion = consumirRecepcion;

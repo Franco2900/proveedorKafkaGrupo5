@@ -3,6 +3,7 @@ const app = express()
 
 const consumo = require('./consumo');
 consumo.consumirOrdenesDeCompra();
+consumo.consumirRecepcion();
 /**************************** MIDDLEWARE *********************************/
 app.use(express.json()); // Middleware para parsear los datos que me llegan de las solicitudes a JSON
 app.set('view engine','ejs');
