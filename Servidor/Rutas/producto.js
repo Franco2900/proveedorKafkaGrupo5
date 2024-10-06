@@ -6,6 +6,7 @@ var express = require('express');
 var router  = express.Router();
 
 const conexionDataBase = require('../conexionDataBase.js');
+const conexionDatabaseServidor = require('../conexionDatabaseServidor.js');
 const { Kafka, logLevel } = require('kafkajs');
 
 const kafka = new Kafka({ // Conexión con kafka
@@ -52,7 +53,11 @@ router.post('/alta',async(req,res)=>{
                                   talle = '${talle}', foto = '${foto}', 
                                   color='${color}', stock=${stock} `, {})
 
-    
+    await conexionDatabaseServidor.query(`INSERT INTO novedades 
+        SET codigo ='${codigo}', nombre ='${nombre}', 
+        talle = '${talle}', foto = '${foto}', 
+        color='${color}'`, {})
+
     // CARGA AL TOPIC
     await productor.connect(); // El productor se conecta
 
