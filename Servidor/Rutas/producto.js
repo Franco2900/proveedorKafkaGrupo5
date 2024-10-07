@@ -6,7 +6,6 @@ var express = require('express');
 var router  = express.Router();
 
 const conexionDataBase = require('../conexionDataBase.js');
-const conexionDatabaseServidor = require('../conexionDatabaseServidor.js');
 const { Kafka, logLevel } = require('kafkajs');
 
 const kafka = new Kafka({ // Conexión con kafka
@@ -47,33 +46,41 @@ router.post('/alta',async(req,res)=>{
     const color  = req.body.color;
     const stock  = req.body.stock;
 
-    // CARGA A LA BASE DE DATOS
-    await conexionDataBase.query(`INSERT INTO producto 
-                                  SET codigo ='${codigo}', nombre ='${nombre}', 
-                                  talle = '${talle}', foto = '${foto}', 
-                                  color='${color}', stock=${stock} `, {})
+    var resultados = await conexionDataBase.query(
+        `SELECT EXISTS(SELECT codigo FROM producto WHERE nombre = ? and talle = ? and color = ?) AS existe`,
+        [nombre, talle, color]
+    );
+    var existeProducto = resultados[0].existe;
 
-    await conexionDatabaseServidor.query(`INSERT INTO novedades 
-        SET codigo ='${codigo}', nombre ='${nombre}', 
-        talle = '${talle}', foto = '${foto}', 
-        color='${color}'`, {})
+    if (existeProducto) // SI EXISTE EL PRODUCTO CON MISMO NOMBRE, TALLE Y COLOR..ARROJA ERROR
+    { 
+        console.log('Ya existe el producto');
+        res.redirect('/');
+    } else 
+    {
+        // CARGA A LA BASE DE DATOS
+        await conexionDataBase.query(`INSERT INTO producto 
+                                      SET codigo ='${codigo}', nombre ='${nombre}', 
+                                      talle = '${talle}', foto = '${foto}', 
+                                      color='${color}', stock=${stock} `, {})
 
-    // CARGA AL TOPIC
-    await productor.connect(); // El productor se conecta
+        // CARGA AL TOPIC
+        await productor.connect(); // El productor se conecta
 
-    await productor.send({  // El productor envia uno o varios mensajes al topic indicado. Si no existe el topic, lo crea.
-        topic: 'novedades',
-        messages: [
-            { value: JSON.stringify({ codigo: codigo, nombre: nombre, talle: talle, foto: foto, color: color}) }, // Envio el mensaje en json
-        ],
-    });
+        await productor.send({  // El productor envia uno o varios mensajes al topic indicado. Si no existe el topic, lo crea.
+            topic: 'novedades',
+            messages: [
+                { value: JSON.stringify({ codigo: codigo, nombre: nombre, talle: talle, foto: foto, color: color}) }, // Envio el mensaje en json
+            ],
+        });
 
-    await productor.disconnect();  // El productor se desconecta
+        await productor.disconnect();  // El productor se desconecta
 
-    console.log('***********************************************************');
-    console.log("Se hizo el alta de un nuevo producto: " + codigo);
+        console.log('***********************************************************');
+        console.log("Se hizo el alta de un nuevo producto: " + codigo);
 
-    res.redirect('/');
+        res.redirect('/');
+    }
 });
 
 
