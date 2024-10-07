@@ -44,6 +44,29 @@ async function consumirOrdenesDeCompra() {
             console.log('***********************************************************');
             console.log("Leyendo orden de compra: " + idOrdenDeCompra);
 
+
+            // CARGA A LA BASE DE DATOS
+            await conexionDataBase.query(`INSERT INTO orden_de_compra 
+                SET estado = 'SOLICITADA', 
+                observaciones = 'Sin observaciones', 
+                fecha_de_solicitud = '${fechaSolicitud}',
+                tienda_codigo = '${tienda_codigo}' `, {});
+
+            
+            var resultadosConsulta = await conexionDataBase.query(`SELECT MAX(id) AS id FROM orden_de_compra `, {}); 
+            // Otra forma de obtener el último id: SELECT LAST_INSERT_ID()
+            var IdUltimaOrdenDeCompra = resultadosConsulta[0].id;
+
+            for (let item of itemsSolicitados) 
+            {
+                await conexionDataBase.query(`INSERT INTO item 
+                    SET producto_codigo = '${item.producto_codigo}', 
+                    color = '${item.color}', 
+                    talle = '${item.talle}', 
+                    cantidad_solicitada = ${item.cantidad_solicitada}, 
+                    id_orden_de_compra = ${IdUltimaOrdenDeCompra} `, {});
+            }
+
             // VERIFICACIÓN
             var observaciones = "";
 
