@@ -47,15 +47,16 @@ router.post('/alta',async(req,res)=>{
     const stock  = req.body.stock;
 
     var resultados = await conexionDataBase.query(
-        `SELECT EXISTS(SELECT codigo FROM producto WHERE nombre = ? and talle = ? and color = ?) AS existe`,
-        [nombre, talle, color]
+        `SELECT EXISTS(SELECT codigo FROM producto WHERE (nombre = ? and talle = ? and color = ?) OR codigo = ?) AS existe`,
+        [nombre, talle, color, codigo]
     );
     var existeProducto = resultados[0].existe;
 
     if (existeProducto) // SI EXISTE EL PRODUCTO CON MISMO NOMBRE, TALLE Y COLOR..ARROJA ERROR
     { 
         console.log('Ya existe el producto');
-        res.redirect('/');
+        res.send(`<script>alert('Ya existe un producto con el mismo nombre, talle, color y/o codigo.'); window.location.href = '/';</script>`);
+        //res.redirect('/');
     } else 
     {
         // CARGA A LA BASE DE DATOS
