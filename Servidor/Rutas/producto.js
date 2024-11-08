@@ -144,7 +144,7 @@ router.post('/update',async(req,res)=>{
         // Recorro todos los items de la orden de compra
         for(var j = 0; j < ordenesDeCompra[i].itemsSolicitados.length; j++) 
         {
-            var resultadosConsulta = await conexionDataBase.query(`SELECT stock FROM producto WHERE codigo = '${itemsSolicitados[j].producto_codigo}' `, {})
+            var resultadosConsulta = await conexionDataBase.query(`SELECT stock FROM producto WHERE codigo = '${ordenesDeCompra[i].itemsSolicitados[j].producto_codigo}' `, {})
             var stockDisponible = resultadosConsulta[0].stock;
                     
             if(stockDisponible >= ordenesDeCompra[i].itemsSolicitados[j].cantidad_solicitada)
@@ -238,6 +238,7 @@ async function generarSolicitudAceptadaConDespacho(tienda_codigo, idOrdenDeCompr
     
 
     console.log('Generado solicitud ACEPTADA y orden de DESPACHO');
+    return;
 }
 
 
